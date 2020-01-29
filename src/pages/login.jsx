@@ -1,16 +1,43 @@
-import React from "react";
+import React, { useState } from "react";
 import { connect } from "react-redux";
 
-function Login(props) {
-  const { login } = props;
-  console.log("props are...", props);
-  return <button onClick={login}>Login</button>;
+function useInput({ type }) {
+  const [value, setValue] = useState("");
+  const input = (
+    <input value={value} onChange={e => setValue(e.target.value)} type={type} />
+  );
+  return [value, input];
 }
 
-const mapDispatchToProps = dispatch => {
+function Login(props) {
+  const {
+    login,
+    loginReducer: { signInstatus }
+  } = props;
+  const [username, userInput] = useInput({ type: "text" });
+  const [password, passwordInput] = useInput({ type: "text" });
+  if (!signInstatus)
+    return (
+      <>
+        {userInput} <br />
+        {passwordInput}
+        <button onClick={() => login(username, password)}>Login</button>
+      </>
+    );
+  return <div>SignedIn Successfully</div>;
+}
+
+const mapStateToProps = state => {
   return {
-    login: () => dispatch({ type: "SET_LOGIN" })
+    loginReducer: state.LoginReducer
   };
 };
 
-export default connect(null, mapDispatchToProps)(Login);
+const mapDispatchToProps = dispatch => {
+  return {
+    login: (username, password) =>
+      dispatch({ type: "SET_LOGIN", data: { username, password } })
+  };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(Login);

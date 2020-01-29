@@ -9,7 +9,9 @@ const LoginReducer = (state = initState, action) => {
   switch (type) {
     case "SET_TOKEN_ASYNC":
       const { userToken } = data;
-      console.log("aaya....", userToken);
+      if(!userToken) {
+          return { ...state, signInstatus: false };
+      }
       return { ...state, userToken, signInstatus: true };
 
     default:
